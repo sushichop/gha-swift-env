@@ -1,5 +1,7 @@
 # gha-swift-env
 
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-v1-undefined.svg?logo=github&logoColor=white)](https://github.com/marketplace/actions/swift-env)
+[![release](https://img.shields.io/github/v/release/sushichop/gha-swift-env.svg?color=blue)](https://github.com/sushichop/gha-swift-env/releases)
 ![CI](https://github.com/sushichop/gha-swift-env/workflows/CI/badge.svg)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sushichop/gha-swift-env/blob/main/LICENSE)
 
