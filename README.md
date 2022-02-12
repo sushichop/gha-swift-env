@@ -1,5 +1,8 @@
 # gha-swift-env
 
+![CI](https://github.com/sushichop/gha-swift-env/workflows/CI/badge.svg)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sushichop/gha-swift-env/blob/main/LICENSE)
+
 `gha-swift-env` is a GitHub Action that sets up a Swift environment for **cross-platform(macOS, Ubuntu Linux, and Windows)**. 
 
 And it also automatically installs Ninja, which is required for building a Swift code with CMake.
