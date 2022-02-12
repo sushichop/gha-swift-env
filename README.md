@@ -14,7 +14,7 @@ You can set the Swift version of the release.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '5.4.2'
+    swift-version: '5.5.3'
 - name: Show Swift version and build a Swift package
   run: |
     swift --version
@@ -26,7 +26,7 @@ You can also set the Swift version of the snapshot.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '2021-12-23-a'
+    swift-version: '2022-01-09-a'
 - name: Show Swift version and build a Swift package
   run: |
     swift --version
@@ -48,8 +48,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.4.2', '2021-12-23-a']
-        os: ['macos-latest', 'ubuntu-latest', 'windows-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
+        os: ['macos-11', 'ubuntu-latest', 'windows-latest']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -67,7 +67,7 @@ You can also build a Swift package with CMake and Ninja.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '5.4.2'
+    swift-version: '5.5.3'
 - name: Build with CMake and Ninja
   run: |
     cmake -B ./build -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -G Ninja -S .
@@ -78,7 +78,7 @@ You can also build a Swift package with CMake and Ninja.
 
 - `swift-version` – (required) Swift version to use
   - Specify release or snapshot version
-    - `'5.4.2'`, `'5.5'`, `'2021-12-23-a'`, ...
+    - `'5.4.2'`, `'5.5'`, `'2022-01-09-a'`, ...
   - Default
     - `'5.4.2'`
     - This value is the minimum Swift version to support Swift 

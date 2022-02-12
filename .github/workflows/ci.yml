@@ -16,8 +16,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.4.2', '2021-12-23-a']
-        os: ['macos-latest', 'ubuntu-latest', 'windows-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
+        os: ['macos-11', 'ubuntu-latest', 'windows-latest']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -35,8 +35,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.4.2', '2021-12-23-a']
-        os: ['macos-latest', 'ubuntu-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
+        os: ['macos-11', 'ubuntu-latest']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.4.2', '2021-12-23-a']
+        swift-version: ['5.5.3', '2022-01-09-a']
         os: ['windows-latest']
       fail-fast: false
     steps:
