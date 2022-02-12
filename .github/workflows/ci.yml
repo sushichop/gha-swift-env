@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  swiftpm:
+    name: SwiftPM - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        swift-version: ['5.4.2', '2021-12-23-a']
+        os: ['macos-latest', 'ubuntu-latest', 'windows-latest']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: sushichop/gha-swift-env
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Build and test a Swift package
+        run: |
+          swift build -v -c release
+          swift test -v
+
+  cmake-macos-linux:
+    name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        swift-version: ['5.4.2', '2021-12-23-a']
+        os: ['macos-latest', 'ubuntu-latest']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: sushichop/gha-swift-env
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Build with CMake and Ninja
+        run: |
+          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -G Ninja -S .
+          ninja -C ./build -v
+
+  cmake-windows:
+    name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        swift-version: ['5.4.2', '2021-12-23-a']
+        os: ['windows-latest']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: sushichop/gha-swift-env
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Build with CMake and Ninja
+        run: |
+          $SwiftFlags = '-sdk ' + "$Env:SDKROOT".Replace('\', '/')
+          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS=$SwiftFlags -G Ninja -S .
+          ninja -C ./build -v

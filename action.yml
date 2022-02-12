@@ -1,0 +1,35 @@
+name: 'Swift Env'
+description: 'A GitHub Action that sets up a Swift environment for cross-platform'
+author: 'Koichi Yokota'
+branding:
+  icon: 'package'
+  color: 'purple'
+
+inputs:
+  swift-version:
+    description: 'Swift version to use'
+    required: true
+    default: '5.4.2'
+  winsdk-version:
+    description: 'WinSDK version to use on Windows'
+    required: false
+    default: 'default'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Set up Swift ${{ inputs.swift-version }}
+      if: runner.os == 'macOS'
+      shell: bash
+      run: ./swift-macos.sh ${{ inputs.swift-version }}
+
+    - name: Set up Swift ${{ inputs.swift-version }}
+      if: runner.os == 'Linux'
+      shell: bash
+      run: ./swift-linux.sh ${{ inputs.swift-version }}
+
+    - name: Set up Swift ${{ inputs.swift-version }}
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./SwiftWindows.ps1 -WinSDK ${{ inputs.winsdk-version }} -SwiftVersion ${{ inputs.swift-version }}
