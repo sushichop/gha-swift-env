@@ -1,7 +1,7 @@
 Param(
   [String]$SwiftVersion = '5.4.2',  # e.g. '5.4.2' '5.5' '2021-12-23-a'
   [String]$Arch = 'x64',            #
-  [String]$WinSDK = 'default'       # e.g. 'default', '10.019041.0', '10.0.20348.0'
+  [String]$WinSDK = ''              # e.g. '', '10.019041.0', '10.0.20348.0'
 )
 
 if (!$Env:GITHUB_ACTIONS) {
@@ -9,17 +9,14 @@ if (!$Env:GITHUB_ACTIONS) {
 }
 $PSVersionTable
 
-# Install Ninja
+# Install Ninja.
 choco install ninja --yes --no-progress
 ninja --version
 
-# Set up Visual Studio
+# Set up Visual Studio.
 $InstallationPath = Get-VSSetupInstance | Select-Object -ExpandProperty InstallationPath
 $vcvarsallPath = Join-Path $InstallationPath 'VC\Auxiliary\Build\vcvarsall.bat'
 
-if ($WinSDK -eq 'default') {
-  $WinSDK = ''
-}
 cmd.exe -Verb runas /c "call `"$vcvarsallPath`" $Arch $WinSDK && set > %TEMP%\vcvars.txt"
 
 Get-Content "$Env:TEMP\vcvars.txt" | Foreach-Object {
@@ -66,7 +63,7 @@ if ($NULL -ne (Get-Command swift -ErrorAction SilentlyContinue | Select-Object -
   }
 }
 
-# Install Swift Toolchain
+# Install Swift Toolchain.
 if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
   Write-Output "Download Swift snapshot version: $SwiftVersion ..."
   curl.exe -sL "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -o "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
@@ -77,11 +74,13 @@ if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
   Start-Process -FilePath "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe" -ArgumentList '/install /passive /norestart' -Wait
 }
 
+# Set environment variables.
 $Env:DEVELOPER_DIR = 'C:\Library\Developer'
 Write-Output DEVELOPER_DIR=$Env:DEVELOPER_DIR | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
 $Env:SDKROOT = 'C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk'
 Write-Output SDKROOT=$Env:SDKROOT | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
 
+# Set Path.
 $Env:Path  = 'C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin' + ';' + $Env:Path
 Write-Output 'C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
 $Env:Path  = 'C:\Library\Swift-development\bin' + ';' + $Env:Path
@@ -91,11 +90,11 @@ Write-Output 'C:\Library\icu-67\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -
 # $Env:Path  = 'C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\bin' + ';' + $Env:Path
 # Write-Output 'C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
 
-# Add supporting files
+# Add supporting files.
 Copy-Item -Path "$Env:SDKROOT\usr\share\ucrt.modulemap" -Destination "$Env:UniversalCRTSdkDir\Include\$Env:UCRTVersion\ucrt\module.modulemap" -Force
 Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.modulemap" -Destination "$Env:VCToolsInstallDir\include\module.modulemap" -Force
 Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.apinotes" -Destination "$Env:VCToolsInstallDir\include\visualc.apinotes" -Force
 Copy-Item -Path "$Env:SDKROOT\usr\share\winsdk.modulemap" -Destination "$Env:UniversalCRTSdkDir\Include\$Env:UCRTVersion\um\module.modulemap" -Force
 
-# Output Swift version
+# Output Swift version.
 swift --version

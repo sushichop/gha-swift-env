@@ -20,7 +20,7 @@ You can set the Swift version of the release.
 - name: Show Swift version and build a Swift package
   run: |
     swift --version
-    swift build -v
+    swift build -v -c release
 ```
 
 You can also set the Swift version of the snapshot.
@@ -32,7 +32,7 @@ You can also set the Swift version of the snapshot.
 - name: Show Swift version and build a Swift package
   run: |
     swift --version
-    swift build -v
+    swift build -v -c release
 ```
 
 ## Example
@@ -50,8 +50,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.5.3', '2022-01-09-a']
         os: ['macos-11', 'ubuntu-latest', 'windows-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
           swift-version: ${{ matrix.swift-version }}
       - name: Build and test a Swift package
         run: |
-          swift build -v
+          swift build -v -c release
           swift test -v
 ```
 
@@ -72,7 +72,7 @@ You can also build a Swift package with CMake and Ninja.
     swift-version: '5.5.3'
 - name: Build with CMake and Ninja
   run: |
-    cmake -B ./build -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -G Ninja -S .
+    cmake -B ./build -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
     ninja -C ./build -v
 ```
 
@@ -88,10 +88,10 @@ You can also build a Swift package with CMake and Ninja.
    
 - `winsdk-version` – (optional) WinSDK to use on Windows
   - Specify Windows 10 SDK version
-    - `'default'`, `'10.019041.0'`, `'10.0.20348.0'`, ... 
+    - `''`, `'10.019041.0'`, `'10.0.20348.0'`, ... 
   - Default:
-    - `default`
-    - This value(`default`) sets the default Windows 10 SDK version
+    - `''`
+    - This value(an empty string) sets the default Windows 10 SDK version
 
 ## License
 

@@ -8,7 +8,7 @@ if ! ${GITHUB_ACTIONS}; then
   exit 1
 fi
 
-# Install Ninja
+# Install Ninja.
 if ! type ninja > /dev/null 2>&1; then
   sudo apt-get -q update && sudo apt-get -q install -y ninja-build
 fi
@@ -46,7 +46,7 @@ fi
 DISTRO_NAME_LOWERCASE=$(echo "${DISTRO_NAME}" | tr "[:upper:]" "[:lower:]")
 DISTRO_VERSION_ID_WO_DOT=$(echo "${DISTRO_VERSION_ID}" | sed -e 's/\.//g')
 
-# Install Swift Toolchain
+# Install Swift Toolchain.
 if [[ $SWIFT_VERSION =~ [0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z] ]]; then
   echo "Download Swift snapshot version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/development/${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID_WO_DOT}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz" -o "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz"
@@ -61,5 +61,5 @@ else
   echo "/opt/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}/usr/bin" >> $GITHUB_PATH
 fi
 
-# Output Swift version
+# Output Swift version.
 swift --version
