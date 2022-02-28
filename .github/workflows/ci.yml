@@ -29,7 +29,7 @@ jobs:
         run: swift --version
       - name: Build a Swift package
         run: swift build -v -c release
-      - name: Build a Swift package
+      - name: Test a Swift package
         run: swift test -v
 
   cmake-macos-linux:
