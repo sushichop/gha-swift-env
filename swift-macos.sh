@@ -8,7 +8,7 @@ if ! ${GITHUB_ACTIONS}; then
   exit 1
 fi
 
-# Install Ninja
+# Install Ninja.
 if ! type ninja > /dev/null 2>&1; then
   brew update && brew install ninja
 fi
@@ -29,7 +29,7 @@ if `type swift > /dev/null 2>&1` && [[ $(swift --version | head -n 1) =~ " Swift
   exit 0
 fi
 
-# Install Swift Toolchain
+# Install Swift Toolchain.
 if [[ $SWIFT_VERSION =~ [0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z] ]]; then
   echo "Download Swift snapshot version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/development/xcode/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg" -o "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg"
@@ -46,5 +46,5 @@ else
   echo TOOLCHAINS=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier:' "/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain/Info.plist") >> $GITHUB_ENV
 fi
 
-# Output Swift version
+# Output Swift version.
 swift --version

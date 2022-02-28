@@ -16,37 +16,41 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.5.3', '2022-01-09-a']
         os: ['macos-11', 'ubuntu-latest', 'windows-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - name: sushichop/gha-swift-env
+      - name: sushichop/gha-swift-env@v1
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
-      - name: Build and test a Swift package
-        run: |
-          swift build -v -c release
-          swift test -v
+      - name: Show Swift version
+        run: swift --version
+      - name: Build a Swift package
+        run: swift build -v -c release
+      - name: Test a Swift package
+        run: swift test -v
 
   cmake-macos-linux:
     name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.5.3', '2022-01-09-a']
         os: ['macos-11', 'ubuntu-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - name: sushichop/gha-swift-env
+      - name: sushichop/gha-swift-env@1
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
+      - name: Show Swift version
+        run: swift --version
       - name: Build with CMake and Ninja
         run: |
-          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -G Ninja -S .
+          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
           ninja -C ./build -v
 
   cmake-windows:
@@ -54,15 +58,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        swift-version: ['5.5.3', '2022-01-09-a']
         os: ['windows-latest']
+        swift-version: ['5.5.3', '2022-01-09-a']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - name: sushichop/gha-swift-env
+      - name: sushichop/gha-swift-env@v1
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
+      - name: Show Swift version
+        run: swift --version
       - name: Build with CMake and Ninja
         run: |
           $SwiftFlags = '-sdk ' + "$Env:SDKROOT".Replace('\', '/')
