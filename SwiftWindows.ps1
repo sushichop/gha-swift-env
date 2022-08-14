@@ -67,10 +67,12 @@ if ($NULL -ne (Get-Command swift -ErrorAction SilentlyContinue | Select-Object -
 if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
   Write-Output "Download Swift snapshot version: $SwiftVersion ..."
   curl.exe -sL "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -o "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
+  Write-Output "Successfully downloaded!"
   Start-Process -FilePath "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -ArgumentList '/install /passive /norestart' -Wait
 } else {
   Write-Output "Download Swift release version: $SwiftVersion ..."
   curl.exe -sL "https://download.swift.org/swift-$SwiftVersion-release/windows10/swift-$SwiftVersion-RELEASE/swift-$SwiftVersion-RELEASE-windows10.exe" -o "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe"
+  Write-Output "Successfully downloaded!"
   Start-Process -FilePath "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe" -ArgumentList '/install /passive /norestart' -Wait
 }
 
@@ -92,8 +94,13 @@ Write-Output 'C:\Library\icu-67\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -
 
 # Add supporting files.
 Copy-Item -Path "$Env:SDKROOT\usr\share\ucrt.modulemap" -Destination "$Env:UniversalCRTSdkDir\Include\$Env:UCRTVersion\ucrt\module.modulemap" -Force
-Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.modulemap" -Destination "$Env:VCToolsInstallDir\include\module.modulemap" -Force
-Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.apinotes" -Destination "$Env:VCToolsInstallDir\include\visualc.apinotes" -Force
+if (Test-Path -Path "$env:SDKROOT\usr\share\vcruntime.modulemap") {
+  Copy-Item -Path "$env:SDKROOT\usr\share\vcruntime.modulemap" -Destination "$env:VCToolsInstallDir\include\module.modulemap" -Force
+  Copy-Item -Path "$env:SDKROOT\usr\share\vcruntime.apinotes" -Destination "$env:VCToolsInstallDir\include\vcruntime.apinotes" -Force
+} else {
+  Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.modulemap" -Destination "$Env:VCToolsInstallDir\include\module.modulemap" -Force
+  Copy-Item -Path "$Env:SDKROOT\usr\share\visualc.apinotes" -Destination "$Env:VCToolsInstallDir\include\visualc.apinotes" -Force
+}
 Copy-Item -Path "$Env:SDKROOT\usr\share\winsdk.modulemap" -Destination "$Env:UniversalCRTSdkDir\Include\$Env:UCRTVersion\um\module.modulemap" -Force
 
 # Output Swift version.

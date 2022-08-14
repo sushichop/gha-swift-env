@@ -50,12 +50,14 @@ DISTRO_VERSION_ID_WO_DOT=$(echo "${DISTRO_VERSION_ID}" | sed -e 's/\.//g')
 if [[ $SWIFT_VERSION =~ [0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z] ]]; then
   echo "Download Swift snapshot version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/development/${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID_WO_DOT}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz" -o "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz"
+  echo "Successfully downloaded!"
   tar xfz "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz" -C /opt
   export PATH="/opt/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}/usr/bin:${PATH}"
   echo "/opt/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}/usr/bin" >> $GITHUB_PATH
 else
   echo "Download Swift release version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/swift-${SWIFT_VERSION}-release/${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID_WO_DOT}/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz" -o "/tmp/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz"
+  echo "Successfully downloaded!"
   tar xfz "/tmp/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}.tar.gz" -C /opt
   export PATH="/opt/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}/usr/bin:${PATH}"
   echo "/opt/swift-${SWIFT_VERSION}-RELEASE-${DISTRO_NAME_LOWERCASE}${DISTRO_VERSION_ID}/usr/bin" >> $GITHUB_PATH

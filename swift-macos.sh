@@ -33,6 +33,7 @@ fi
 if [[ $SWIFT_VERSION =~ [0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z] ]]; then
   echo "Download Swift snapshot version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/development/xcode/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg" -o "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg"
+  echo "Successfully downloaded!"
   xattr -dr "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg"
   sudo installer -pkg "/tmp/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}-osx.pkg" -target LocalSystem
   export TOOLCHAINS=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier:' "/Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-${SWIFT_VERSION}.xctoolchain/Info.plist")
@@ -40,6 +41,7 @@ if [[ $SWIFT_VERSION =~ [0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z] ]]; then
 else
   echo "Download Swift release version: ${SWIFT_VERSION} ..."
   curl -sL "https://download.swift.org/swift-${SWIFT_VERSION}-release/xcode/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-osx.pkg" -o "/tmp/swift-${SWIFT_VERSION}-RELEASE-osx.pkg"
+  echo "Successfully downloaded!"
   xattr -dr "/tmp/swift-${SWIFT_VERSION}-RELEASE-osx.pkg"
   sudo installer -pkg "/tmp/swift-${SWIFT_VERSION}-RELEASE-osx.pkg" -target LocalSystem
   export TOOLCHAINS=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier:' "/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain/Info.plist")
