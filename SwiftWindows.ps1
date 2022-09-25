@@ -9,9 +9,72 @@ if (!$Env:GITHUB_ACTIONS) {
 }
 $PSVersionTable
 
+
+### Ninja
+
 # Install Ninja.
 choco install ninja --yes --no-progress
 ninja --version
+
+
+### Swift Toolchain
+
+# Remove the Swift minor version if it is 0.
+if (-Not($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D')) {
+  $SplitVersion = $SwiftVersion.Split('.')
+  if (($SplitVersion.Length -eq 3) -and ($SplitVersion[2] -eq 0)) {
+    $SwiftVersion = $SplitVersion[0] + '.' + $SplitVersion[1]
+  }
+}
+
+# Check the Swift version whether it is already installed or not.
+if ($NULL -ne (Get-Command swift -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Definition -First 1)) {
+  $CommandResult = swift --version | Select-Object -First 1
+  if ($CommandResult -cmatch " Swift version $SwiftVersion ") {
+    Write-Output "Swift $SwiftVersion is already installed."
+    swift --version
+    exit 0
+  }
+}
+
+# Install Swift Toolchain.
+$exitCode = 0
+if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
+  Write-Output "Download Swift snapshot version: $SwiftVersion ..."
+  curl.exe -sL "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -o "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
+  Write-Output "🎉 Successfully downloaded!"
+  $process = Start-Process -FilePath "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -ArgumentList -q -Wait -PassThru
+  $exitCode = $process.ExitCode
+} else {
+  Write-Output "Download Swift release version: $SwiftVersion ..."
+  curl.exe -sL "https://download.swift.org/swift-$SwiftVersion-release/windows10/swift-$SwiftVersion-RELEASE/swift-$SwiftVersion-RELEASE-windows10.exe" -o "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe"
+  Write-Output "🎉 Successfully downloaded!"
+  $process = Start-Process -FilePath "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe" -ArgumentList  -q -Wait -PassThru
+  $exitCode = $process.ExitCode
+}
+if (($exitCode -eq 0) -or ($exitCode -eq 3010)) {
+  Write-Output "🎉 Successfully installed!"
+} else {
+  Write-Output "🚫 Failed to install..."
+  exit $exitCode
+}
+
+# Get environment variables in the current session.
+foreach($level in 'Machine', 'User') {
+  [Environment]::GetEnvironmentVariables($level).GetEnumerator() | ForEach-Object {
+     if($_.Name -eq 'Path') { 
+        $_.Value = ($((Get-Content "Env:$($_.Name)") + ";$($_.Value)") -split ';' | Select-Object -unique) -join ';'
+     }
+     $_
+  } | Set-Content -Path { "Env:$($_.Name)" }
+}
+
+# Set environment variables.
+Write-Output "$Env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+Get-ChildItem Env: | ForEach-Object { Write-Output "$($_.Name)=$($_.Value)" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append }
+
+
+### Visual Studio
 
 # Set up Visual Studio.
 $InstallationPath = Get-VSSetupInstance | Select-Object -ExpandProperty InstallationPath
@@ -45,52 +108,6 @@ Write-Output $Env:UniversalCRTSdkDir
 Write-Output $Env:UCRTVersion
 Write-Output $Env:VCToolsInstallDir
 
-# Remove the Swift minor version if it is 0.
-if (-Not($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D')) {
-  $SplitVersion = $SwiftVersion.Split('.')
-  if (($SplitVersion.Length -eq 3) -And ($SplitVersion[2] -eq 0)) {
-    $SwiftVersion = $SplitVersion[0] + '.' + $SplitVersion[1]
-  }
-}
-
-# Check the Swift version whether it is already installed or not.
-if ($NULL -ne (Get-Command swift -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Definition -First 1)) {
-  $CommandResult = swift --version | Select-Object -First 1
-  if ($CommandResult -cmatch " Swift version $SwiftVersion ") {
-    Write-Output "Swift $SwiftVersion is already installed."
-    swift --version
-    return 0
-  }
-}
-
-# Install Swift Toolchain.
-if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
-  Write-Output "Download Swift snapshot version: $SwiftVersion ..."
-  curl.exe -sL "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -o "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
-  Write-Output "Successfully downloaded!"
-  Start-Process -FilePath "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -ArgumentList '/install /passive /norestart' -Wait
-} else {
-  Write-Output "Download Swift release version: $SwiftVersion ..."
-  curl.exe -sL "https://download.swift.org/swift-$SwiftVersion-release/windows10/swift-$SwiftVersion-RELEASE/swift-$SwiftVersion-RELEASE-windows10.exe" -o "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe"
-  Write-Output "Successfully downloaded!"
-  Start-Process -FilePath "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe" -ArgumentList '/install /passive /norestart' -Wait
-}
-
-# Set environment variables.
-$Env:DEVELOPER_DIR = 'C:\Library\Developer'
-Write-Output DEVELOPER_DIR=$Env:DEVELOPER_DIR | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-$Env:SDKROOT = 'C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk'
-Write-Output SDKROOT=$Env:SDKROOT | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-
-# Set Path.
-$Env:Path  = 'C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin' + ';' + $Env:Path
-Write-Output 'C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
-$Env:Path  = 'C:\Library\Swift-development\bin' + ';' + $Env:Path
-Write-Output 'C:\Library\Swift-development\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
-$Env:Path  = 'C:\Library\icu-67\usr\bin' + ';' + $Env:Path
-Write-Output 'C:\Library\icu-67\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
-# $Env:Path  = 'C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\bin' + ';' + $Env:Path
-# Write-Output 'C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\bin' | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf-8 -Append
 
 # Add supporting files.
 Copy-Item -Path "$Env:SDKROOT\usr\share\ucrt.modulemap" -Destination "$Env:UniversalCRTSdkDir\Include\$Env:UCRTVersion\ucrt\module.modulemap" -Force
