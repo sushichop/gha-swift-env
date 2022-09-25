@@ -28,7 +28,7 @@ You can also set the Swift version of the snapshot.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '2022-01-09-a'
+    swift-version: '2022-07-20-a'
 - name: Show Swift version and build a Swift package
   run: |
     swift --version
@@ -51,7 +51,7 @@ jobs:
     strategy:
       matrix:
         os: ['macos-11', 'ubuntu-latest', 'windows-latest']
-        swift-version: ['5.4.2', '2022-01-09-a']
+        swift-version: ['5.6', '2022-07-20-a']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -69,7 +69,7 @@ You can also build a Swift package with CMake and Ninja.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '5.6'
+    swift-version: '5.4.2'
 - name: Build with CMake and Ninja
   run: |
     cmake -B ./build -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
