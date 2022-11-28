@@ -38,7 +38,7 @@ if [ "${DISTRO_NAME}" != 'Ubuntu' ]; then
   exit 1
 fi
 
-if [ "${DISTRO_VERSION_ID}" != '18.04' ] && [ "${DISTRO_VERSION_ID}" != '20.04' ]; then
+if [ "${DISTRO_VERSION_ID}" != '18.04' ] && [ "${DISTRO_VERSION_ID}" != '20.04' ] && [ "${DISTRO_VERSION_ID}" != '22.04' ]; then
   echo 'unsupported distribution version'
   exit 1
 fi
