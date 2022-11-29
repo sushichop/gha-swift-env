@@ -20,7 +20,7 @@ jobs:
         swift-version: ['5.6', '5.7.1']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
@@ -50,7 +50,7 @@ jobs:
         swift-version: ['5.6']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
@@ -81,7 +81,7 @@ jobs:
         swift-version: ['5.4.2', '5.6']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: sushichop/gha-swift-env@v1
         uses: ./
         with:
