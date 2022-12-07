@@ -88,7 +88,6 @@ Get-Content "$Env:TEMP\vcvars.txt" | Foreach-Object {
     $value=$matches[2].ToString()
     # Sets environment variables for this step.
     switch ($key) {
-      'Path'                { $Env:Path = $value + ';' + $Env:Path }
       'UniversalCRTSdkDir'  { $Env:UniversalCRTSdkDir = $value }
       'UCRTVersion'         { $Env:UCRTVersion = $value }
       'VCToolsInstallDir'   { $Env:VCToolsInstallDir = $value }

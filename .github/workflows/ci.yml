@@ -93,3 +93,25 @@ jobs:
           $SwiftFlags = '-sdk ' + "$Env:SDKROOT".Replace('\', '/')
           cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS=$SwiftFlags -G Ninja -S .
           ninja -C ./build -v
+
+  check-interference-with-setup-node:
+    name: Check interference with actions/setup-node on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['windows-latest']
+        swift-version: ['5.7.1']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: sushichop/gha-swift-env@v1
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Show Swift version
+        run: swift --version
+      # Check C:\hostedtoolcache\windows\node\x.y.z\x64
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: node -v
