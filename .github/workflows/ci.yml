@@ -95,7 +95,7 @@ jobs:
           ninja -C ./build -v
 
   check-interference-with-setup-node:
-    name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    name: Check interference with actions/setup-node on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
