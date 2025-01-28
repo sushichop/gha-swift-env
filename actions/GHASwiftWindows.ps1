@@ -1,21 +1,13 @@
 Param(
-  [String]$SwiftVersion = '5.4.2',  # e.g. '5.4.2' '5.5' '2021-12-23-a'
+  [String]$SwiftVersion = '6.0.3',  # e.g.'5.10' '6.0.3' '2025-01-10-a'
   [String]$Arch = 'x64',            #
-  [String]$WinSDK = ''              # e.g. '', '10.019041.0', '10.0.20348.0'
+  [String]$WinSDK = ''              # e.g. '', '10.0.26100.0'
 )
 
 if (!$Env:GITHUB_ACTIONS) {
   return 1
 }
 $PSVersionTable
-
-
-### Ninja
-
-# Install Ninja.
-choco install ninja --yes --no-progress
-ninja --version
-
 
 ### Swift Toolchain
 
@@ -37,21 +29,23 @@ if ($NULL -ne (Get-Command swift -ErrorAction SilentlyContinue | Select-Object -
   }
 }
 
-# Install Swift Toolchain.
-$exitCode = 0
+# Download Swift Toolchain.
 if ($SwiftVersion -match '\d{4}-\d{2}-\d{2}-\D') {
-  Write-Output "Download Swift snapshot version: $SwiftVersion ..."
-  curl.exe -sL "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -o "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
-  Write-Output "🎉 Successfully downloaded!"
-  $process = Start-Process -FilePath "$Env:TEMP/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe" -ArgumentList -q -Wait -PassThru
-  $exitCode = $process.ExitCode
+  Write-Output "Downloading Swift snapshot version: $SwiftVersion ..."
+  $DownloadSwiftFileName = "swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion-windows10.exe"
+  $DownloadSwiftUrl = "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$SwiftVersion/$DownloadSwiftFileName"
 } else {
-  Write-Output "Download Swift release version: $SwiftVersion ..."
-  curl.exe -sL "https://download.swift.org/swift-$SwiftVersion-release/windows10/swift-$SwiftVersion-RELEASE/swift-$SwiftVersion-RELEASE-windows10.exe" -o "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe"
-  Write-Output "🎉 Successfully downloaded!"
-  $process = Start-Process -FilePath "$Env:TEMP/swift-$SwiftVersion-RELEASE-windows10.exe" -ArgumentList  -q -Wait -PassThru
-  $exitCode = $process.ExitCode
+  Write-Output "Downloading Swift release version: $SwiftVersion ..."
+  $DownloadSwiftFileName = "swift-$SwiftVersion-RELEASE-windows10.exe"
+  $DownloadSwiftUrl = "https://download.swift.org/swift-$SwiftVersion-release/windows10/swift-$SwiftVersion-RELEASE/$DownloadSwiftFileName"
 }
+curl.exe -sL "$DownloadSwiftUrl" -o "$Env:TEMP/$DownloadSwiftFileName"
+
+# Install Swift Toolchain.
+Write-Output "Installing Swift $DownloadSwiftFileName ..."
+$process = Start-Process -FilePath "$Env:TEMP/$DownloadSwiftFileName" -ArgumentList -q -Wait -PassThru
+$exitCode = $process.ExitCode
+
 if (($exitCode -eq 0) -or ($exitCode -eq 3010)) {
   Write-Output "🎉 Successfully installed!"
 } else {

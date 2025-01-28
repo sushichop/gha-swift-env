@@ -11,26 +11,27 @@ on:
       - "**"
 
 jobs:
-  swiftpm:
+  SwiftPM:
     name: SwiftPM - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-12', 'ubuntu-20.04', 'windows-latest']
-        swift-version: ['5.6', '5.7.1']
+        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
+        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
           ls -al /Applications | grep Xcode
-          if [ '${{ matrix.swift-version }}' = '5.4.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_12.5.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.5.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.2.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.6' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.3.1.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.0.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.2.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.10' ]; then echo DEVELOPER_DIR=/Applications/Xcode_15.4.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.7' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.0.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.7.1' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.1.app >> $GITHUB_ENV; fi
-      - name: sushichop/gha-swift-env@v1
+          if [ '${{ matrix.swift-version }}' = '5.6' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.3.1.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.5.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.2.1.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.4.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_12.5.1.app >> $GITHUB_ENV; fi
+      - name: gha-swift-env-local
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
@@ -41,27 +42,48 @@ jobs:
       - name: Test a Swift package
         run: swift test -v -Xswiftc -warnings-as-errors
 
-  cmake-macos-linux:
+  CMake:
     name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-12', 'ubuntu-20.04']
-        swift-version: ['5.6']
+        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
+        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
-          ls -al /Applications | grep Xcode
-          if [ '${{ matrix.swift-version }}' = '5.4.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_12.5.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.5.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.2.1.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.0.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.2.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.10' ]; then echo DEVELOPER_DIR=/Applications/Xcode_15.4.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.7' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.0.1.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.6.1' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.4.1.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.6' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.3.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.7' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.0.1.app >> $GITHUB_ENV; fi
-          if [ '${{ matrix.swift-version }}' = '5.7.1' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.1.app >> $GITHUB_ENV; fi
-      - name: sushichop/gha-swift-env@1
+          if [ '${{ matrix.swift-version }}' = '5.5.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_13.2.1.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '5.4.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_12.5.1.app >> $GITHUB_ENV; fi
+      - name: gha-swift-env-local
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Show Swift version
+        run: swift --version
+      - name: Build with CMake and Ninja
+        shell: bash
+        run: |
+          ./scripts/cmake-script.sh
+
+  CMake-macOS:
+    name: CMake directly - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['macos-latest']
+        swift-version: ['6.0.3']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: gha-swift-env-local
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
@@ -69,27 +91,55 @@ jobs:
         run: swift --version
       - name: Build with CMake and Ninja
         run: |
+          brew update && brew install ninja
+          cmake --version
+          ninja --version
           cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
           ninja -C ./build -v
 
-  cmake-windows:
-    name: CMake - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+  CMake-Linux:
+    name: CMake directly - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']
+        swift-version: ['6.0.3']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: gha-swift-env-local
+        uses: ./
+        with:
+          swift-version: ${{ matrix.swift-version }}
+      - name: Show Swift version
+        run: swift --version
+      - name: Build with CMake and Ninja
+        run: |
+          sudo apt-get -qq update && sudo apt-get -qq install -y ninja-build
+          cmake --version
+          ninja --version
+          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
+          ninja -C ./build -v
+
+  CMake-Windows:
+    name: CMake directly - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: ['windows-latest']
-        swift-version: ['5.4.2', '5.6']
+        swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
-      - name: sushichop/gha-swift-env@v1
+      - uses: actions/checkout@v4
+      - name: gha-swift-env-local
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
-      - name: Show Swift version
-        run: swift --version
       - name: Build with CMake and Ninja
         run: |
+          choco install ninja --yes --no-progress
+          cmake --version
+          ninja --version
           $SwiftFlags = '-sdk ' + "$Env:SDKROOT".Replace('\', '/')
           cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS=$SwiftFlags -G Ninja -S .
           ninja -C ./build -v
@@ -100,18 +150,18 @@ jobs:
     strategy:
       matrix:
         os: ['windows-latest']
-        swift-version: ['5.7.1']
+        swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
-      - name: sushichop/gha-swift-env@v1
+      - uses: actions/checkout@v4
+      - name: gha-swift-env-local
         uses: ./
         with:
           swift-version: ${{ matrix.swift-version }}
       - name: Show Swift version
         run: swift --version
       # Check C:\hostedtoolcache\windows\node\x.y.z\x64
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 'lts/*'
       - run: node -v
