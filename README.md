@@ -5,31 +5,29 @@
 ![CI](https://github.com/sushichop/gha-swift-env/workflows/CI/badge.svg)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sushichop/gha-swift-env/blob/main/LICENSE)
 
-`gha-swift-env` is a GitHub Action that sets up a Swift environment for **cross-platform(macOS, Ubuntu Linux, and Windows)**. 
-
-And it also automatically installs Ninja, which is required for building a Swift code with CMake.
+`gha-swift-env` is a GitHub Action that sets up Swift environment for **cross-platform(macOS, Ubuntu Linux, and Windows)**. 
 
 ## Usage
 
-You can set the Swift version of the release.
+You can set the release version of Swift.
 
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '5.6'
-- name: Show Swift version and build a Swift package
+    swift-version: '6.0.3'
+- name: Show Swift version and build Swift package
   run: |
     swift --version
     swift build -v -c release
 ```
 
-You can also set the Swift version of the snapshot.
+You can also set the snapshot version of Swift.
 
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '2022-07-20-a'
-- name: Show Swift version and build a Swift package
+    swift-version: '2025-01-10-a'
+- name: Show Swift version and build Swift package
   run: |
     swift --version
     swift build -v -c release
@@ -37,7 +35,7 @@ You can also set the Swift version of the snapshot.
 
 ## Example
 
-You can build and test a Swift package on cross-platform(macOS, Ubuntu Linux, and Windows).
+You can build and test Swift package for cross-platform(macOS, Ubuntu Linux, and Windows).
 
 
 ```yaml
@@ -50,11 +48,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-11', 'ubuntu-latest', 'windows-latest']
-        swift-version: ['5.6', '2022-07-20-a']
+        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
+        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: sushichop/gha-swift-env@V1
         with:
           swift-version: ${{ matrix.swift-version }}
@@ -64,31 +62,17 @@ jobs:
           swift test -v -Xswiftc -warnings-as-errors
 ```
 
-You can also build a Swift package with CMake and Ninja.
-
-```yaml
-- uses: sushichop/gha-swift-env@v1
-  with:
-    swift-version: '5.4.2'
-- name: Build with CMake and Ninja
-  run: |
-    cmake -B ./build -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
-    ninja -C ./build -v
-```
-
 ## Inputs
 
 - `swift-version` – (required) Swift version to use
   - Specify release or snapshot version
-    - `'5.4.2'`, `'5.6'`, `'2022-01-09-a'`, ...
+    - `'5.10'`, `'6.0.3'`, `'2025-01-10-a'`, ...
   - Default
-    - `'5.4.2'`
-    - This value is the minimum Swift version to support Swift 
-    package on cross-platform
-   
+    - `'6.0.3'`
+
 - `winsdk-version` – (optional) WinSDK to use on Windows
   - Specify Windows 10 SDK version
-    - `''`, `'10.019041.0'`, `'10.0.20348.0'`, ... 
+    - `''`, `'10.0.26100.0'`, ... 
   - Default:
     - `''`
     - This value(an empty string) sets the default Windows 10 SDK version
