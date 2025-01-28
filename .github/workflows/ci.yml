@@ -71,8 +71,6 @@ jobs:
       - name: Build with CMake and Ninja
         shell: bash
         run: |
-          cmake --version
-          ninja --version
           ./scripts/cmake-script.sh
 
   CMake-macOS:
