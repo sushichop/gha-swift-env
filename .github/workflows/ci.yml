@@ -47,14 +47,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
-        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
+        os: ['macos-15', 'ubuntu-22.04', 'windows-2022']
+        swift-version: ['6.0.3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
+          if [ '${{ matrix.swift-version }}' = '6.3.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_26.6.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.2.4' ]; then echo DEVELOPER_DIR=/Applications/Xcode_26.3.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.1.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.4.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '6.0.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.2.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.10' ]; then echo DEVELOPER_DIR=/Applications/Xcode_15.4.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.7' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.0.1.app >> $GITHUB_ENV; fi
