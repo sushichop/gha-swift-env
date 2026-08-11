@@ -20,7 +20,7 @@ jobs:
         swift-version: ['6.0.3', '5.10', '2025-01-10-a']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
@@ -51,7 +51,7 @@ jobs:
         swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Select Xcode if needed - Swift ${{ matrix.swift-version }} 
         if: runner.os == 'macOS'
         run: |
@@ -85,7 +85,7 @@ jobs:
         swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: gha-swift-env-local
         uses: ./
         with:
@@ -109,7 +109,7 @@ jobs:
         swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: gha-swift-env-local
         uses: ./
         with:
@@ -133,7 +133,7 @@ jobs:
         swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: gha-swift-env-local
         uses: ./
         with:
@@ -156,7 +156,7 @@ jobs:
         swift-version: ['6.0.3']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: gha-swift-env-local
         uses: ./
         with:
@@ -164,7 +164,7 @@ jobs:
       - name: Show Swift version
         run: swift --version
       # Check C:\hostedtoolcache\windows\node\x.y.z\x64
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
       - run: node -v
