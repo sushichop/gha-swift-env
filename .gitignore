@@ -8,7 +8,7 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 
 # CMake
-build/
+cmake-build/
 
 # VisualStudioCode
 .vscode/*

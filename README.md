@@ -14,7 +14,7 @@ You can set the release version of Swift.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '6.0.3'
+    swift-version: '6.3.3'
 - name: Show Swift version and build Swift package
   run: |
     swift --version
@@ -26,7 +26,7 @@ You can also set the snapshot version of Swift.
 ```yaml
 - uses: sushichop/gha-swift-env@v1
   with:
-    swift-version: '2025-01-10-a'
+    swift-version: '2026-05-18-a'
 - name: Show Swift version and build Swift package
   run: |
     swift --version
@@ -48,11 +48,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
-        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
+        os: ['macos-26', 'ubuntu-24.04', 'windows-2025']
+        swift-version: ['6.3.3', '2026-05-18-a']
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: sushichop/gha-swift-env@V1
         with:
           swift-version: ${{ matrix.swift-version }}
@@ -66,9 +66,9 @@ jobs:
 
 - `swift-version` – (required) Swift version to use
   - Specify release or snapshot version
-    - `'5.10'`, `'6.0.3'`, `'2025-01-10-a'`, ...
+    - `'6.3.3'`, `'2026-05-18-a'`, ...
   - Default
-    - `'6.0.3'`
+    - `'6.3.3'`
 
 - `winsdk-version` – (optional) WinSDK to use on Windows
   - Specify Windows 10 SDK version
