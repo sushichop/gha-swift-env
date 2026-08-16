@@ -2,9 +2,9 @@
 
 set -eu
 
-DISTRIBUTION=${DISTRIBUTION:-'jammy'}
-CMAKE_VERSION=${CMAKE_VERSION:-'3.31.5'}
-NINJA_VERSION=${NINJA_VERSION:-'1.12.1'}
+DISTRIBUTION=${DISTRIBUTION:-'noble'}
+CMAKE_VERSION=${CMAKE_VERSION:-'4.4.2'}
+NINJA_VERSION=${NINJA_VERSION:-'1.13.2'}
 
 # macOS
 if [ $(uname) = 'Darwin' ]; then
@@ -33,7 +33,7 @@ if [ $(uname) = 'Linux' ] && [ -e '/.dockerenv' ]; then
   if ! type unzip > /dev/null 2>&1; then packages+=('unzip'); fi
 
   case ${DISTRIBUTION} in
-    noble|jammy|focal)
+    noble|jammy)
       if [ ${#packages[@]} -ne 0 ]; then
         apt-get -qq update && apt-get -qq install -y ${packages[@]}
       fi
@@ -61,7 +61,7 @@ if [ $(uname) = 'Linux' ] && [ -e '/.dockerenv' ]; then
   fi
 
   # Install Ninja.
-	if [ $(uname -m) = 'aarch64' ]; then DL_FILE_SUFFIX="-aarch64"; else DL_FILE_SUFFIX=””; fi
+  if [ $(uname -m) = 'aarch64' ]; then DL_FILE_SUFFIX="-aarch64"; else DL_FILE_SUFFIX=””; fi
   echo "Downloading Ninja ${NINJA_VERSION} for $(uname -m) ..."
   curl -sL "https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux${DL_FILE_SUFFIX}.zip" -o "/tmp/ninja-linux${DL_FILE_SUFFIX}.zip"
   echo "Installing ninja-linux${DL_FILE_SUFFIX}.zip ..."
@@ -85,16 +85,16 @@ cmake --version
 ninja --version
 
 # Build with CMake and Ninja.
-rm -rf build
+rm -rf cmake-build
 case $(uname) in
   Darwin|Linux)
-    cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
-    ninja -C ./build -v   # or `cmake --build ./build -v`
+    cmake -B ./cmake-build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
+    ninja -C ./cmake-build -v   # or `cmake --build ./cmake-build -v`
     ;;
   *) # Assume OS is Windows.
     export SWIFTFLAGS=$(echo "-sdk $SDKROOT" | sed 's/\\/\//g')
     echo "SWIFTFLAGS is ${SWIFTFLAGS}"
-    cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS="${SWIFTFLAGS}" -G Ninja -S .
-    ninja -C ./build -v   # or `cmake --build ./build -v`
+    cmake -B ./cmake-build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS="${SWIFTFLAGS}" -G Ninja -S .
+    ninja -C ./cmake-build -v   # or `cmake --build ./cmake-build -v`
     ;;
 esac

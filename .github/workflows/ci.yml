@@ -16,8 +16,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-14', 'ubuntu-22.04', 'windows-2022']
-        swift-version: ['6.0.3', '5.10', '2025-01-10-a']
+        os: ['macos-26', 'ubuntu-24.04', 'windows-2025']
+        swift-version: ['6.3.3', '6.2.4']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
@@ -25,6 +25,9 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           ls -al /Applications | grep Xcode
+          if [ '${{ matrix.swift-version }}' = '6.3.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_26.6.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.2.4' ]; then echo DEVELOPER_DIR=/Applications/Xcode_26.3.app >> $GITHUB_ENV; fi
+          if [ '${{ matrix.swift-version }}' = '6.1.2' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.4.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '6.0.3' ]; then echo DEVELOPER_DIR=/Applications/Xcode_16.2.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.10' ]; then echo DEVELOPER_DIR=/Applications/Xcode_15.4.app >> $GITHUB_ENV; fi
           if [ '${{ matrix.swift-version }}' = '5.7' ]; then echo DEVELOPER_DIR=/Applications/Xcode_14.0.1.app >> $GITHUB_ENV; fi
@@ -47,8 +50,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['macos-15', 'ubuntu-22.04', 'windows-2022']
-        swift-version: ['6.0.3']
+        os: ['macos-26', 'ubuntu-24.04', 'windows-2025']
+        swift-version: ['6.3.3', '6.2.4']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
@@ -82,7 +85,7 @@ jobs:
     strategy:
       matrix:
         os: ['macos-latest']
-        swift-version: ['6.0.3']
+        swift-version: ['6.3.3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
@@ -97,8 +100,8 @@ jobs:
           brew update && brew install ninja
           cmake --version
           ninja --version
-          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
-          ninja -C ./build -v
+          cmake -B ./cmake-build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
+          ninja -C ./cmake-build -v
 
   CMake-Linux:
     name: CMake directly - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
@@ -106,7 +109,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest']
-        swift-version: ['6.0.3']
+        swift-version: ['6.3.3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
@@ -121,8 +124,8 @@ jobs:
           sudo apt-get -qq update && sudo apt-get -qq install -y ninja-build
           cmake --version
           ninja --version
-          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
-          ninja -C ./build -v
+          cmake -B ./cmake-build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja -S .
+          ninja -C ./cmake-build -v
 
   CMake-Windows:
     name: CMake directly - Swift ${{ matrix.swift-version }} on ${{ matrix.os }}
@@ -130,7 +133,7 @@ jobs:
     strategy:
       matrix:
         os: ['windows-latest']
-        swift-version: ['6.0.3']
+        swift-version: ['6.3.3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
@@ -144,8 +147,8 @@ jobs:
           cmake --version
           ninja --version
           $SwiftFlags = '-sdk ' + "$Env:SDKROOT".Replace('\', '/')
-          cmake -B ./build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS=$SwiftFlags -G Ninja -S .
-          ninja -C ./build -v
+          cmake -B ./cmake-build -D CMAKE_C_COMPILER=clang -D CMAKE_BUILD_TYPE=Release -D CMAKE_Swift_FLAGS=$SwiftFlags -G Ninja -S .
+          ninja -C ./cmake-build -v
 
   check-interference-with-setup-node:
     name: Check interference with actions/setup-node on ${{ matrix.os }}
@@ -153,7 +156,7 @@ jobs:
     strategy:
       matrix:
         os: ['windows-latest']
-        swift-version: ['6.0.3']
+        swift-version: ['6.3.3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v7
